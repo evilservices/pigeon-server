@@ -3,7 +3,7 @@ var validator = require('validator');
 var debug = require('debug')('login');
 var random = require("randomstring");
 
-module.exports = function(io, socket, data) {
+module.exports = function(ns, socket, data) {
   return Promise.resolve().then(function() {
 
 		//check if all parameters exists

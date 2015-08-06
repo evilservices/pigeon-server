@@ -11,7 +11,17 @@ var db = mysql.createConnection({
 
 module.exports = {
     connect: function (callback) {
-        db.connect(callback);
+        var defer = Promise.defer();
+
+        db.connect(function(err) {
+          if(err) {
+              return defer.reject(err);
+          }
+
+          return defer.resolve();
+        });
+
+        return defer.promise;
     },
     query: function (query, params) {
         var defer = Promise.defer();

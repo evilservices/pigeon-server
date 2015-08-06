@@ -3,7 +3,7 @@ var NodeRSA = require('node-rsa');
 var database = require('../database');
 var debug = require('debug')('verify');
 
-module.exports = function(io, socket, data) {
+module.exports = function(ns, socket, data) {
   return Promise.resolve().then(function() {
 
     //check if all parameters exists

@@ -4,19 +4,19 @@ var validator = require('validator');
 var debug = require('debug')('register');
 var database = require('../database');
 
-module.exports = function(io, socket, data) {
+module.exports = function(ns, socket, data) {
 
   return Promise.resolve().then(function() {
 
     //check if all parameters exists
     debug('check parameters');
 
-    if(!data.hasOwnProperty('username')) throw new Error('Missing username', 1001);
-    if(!data.hasOwnProperty('avatar')) throw new Error('Missing avatar', 1002);
-    if(!data.hasOwnProperty('public_key')) throw new Error('Missing public key', 1003);
+    if(!data.hasOwnProperty('username')) throw new Error('USERNAME_MISSING');
+    if(!data.hasOwnProperty('avatar')) throw new Error('AVATAR_MISSING');
+    if(!data.hasOwnProperty('public_key')) throw new Error('KEY_MISSING');
 
-    if(!validator.isLength(data.username, 4, 20)) throw new Error('Invalid username length', 1010);
-    if(!/^[0-9A-Za-z_]+$/.test(data.username)) throw new Error('Invalid characters in username', 1011);
+    if(!validator.isLength(data.username, 4, 20)) throw new Error('USERNAME_LENGTH');
+    if(!/^[0-9A-Za-z_]+$/.test(data.username)) throw new Error('USERNAME_INVALID');
 
   }).then(function () {
 
@@ -26,11 +26,11 @@ module.exports = function(io, socket, data) {
     var key = new NodeRSA();
     key.importKey(data.public_key, 'pkcs8-public-der');
 
-    if(key.isEmpty(true)) throw new Error('Empty public key', 1004);
-    if(!key.isPublic(true)) throw new Error('Invalid public key', 1005)
+    if(key.isEmpty(true)) throw new Error('KEY_INVALID');
+    if(!key.isPublic(true)) throw new Error('KEY_NOTPUBLIC')
 
-    if(key.getKeySize() < 1024) throw new Error('Public key size is too small', 1006);
-    if(key.getKeySize() > 4096) throw new Error('Public key size is too large', 1007);
+    if(key.getKeySize() < 1024) throw new Error('KEY_TOOSMALL');
+    if(key.getKeySize() > 4096) throw new Error('KEY_TOOLARGE');
 
   }).then(function () {
 
@@ -47,7 +47,7 @@ module.exports = function(io, socket, data) {
     //check if username is already taken
     debug('check username');
 
-    if(rows[0].count == 1) throw new Error('Username already taken', 1008);
+    if(rows[0].count == 1) throw new Error('USERNAME_TAKEN');
 
   }).then(function () {
 
@@ -64,7 +64,7 @@ module.exports = function(io, socket, data) {
     //check for sql insert
     debug('check inserted record');
 
-    if(row == null || row.affectedRows != 1 || !row.insertId) throw new Error('Could not insert user', 1009)
+    if(row == null || row.affectedRows != 1 || !row.insertId) throw new Error('ERROR_REGISTER')
 
     return row.insertId;
 
