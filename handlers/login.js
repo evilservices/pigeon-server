@@ -6,7 +6,8 @@ var random = require("randomstring");
 module.exports = function(ns, socket, data) {
   return Promise.resolve().then(function() {
 
-		//check if all parameters exists
+		// check if all parameters exists
+    // - username : string : username of the user who wants to log in (4-20 chars)
 		debug('check parameters');
 
 		if(!data.hasOwnProperty('username')) throw new Error('USERNAME_MISSING');
@@ -16,7 +17,10 @@ module.exports = function(ns, socket, data) {
 
 	}).then(function () {
 
-		//generate new random login token
+		// generate new random login token
+    // which must be signed with the
+    // private key to complete the log in
+
 		socket.username = data.username;
 		socket.login_token = random.generate(32);
 

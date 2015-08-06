@@ -76,6 +76,38 @@ describe('Registration:', function() {
       });
   });
 
+  it('should not allow short usernames', function() {
+    return test_registration('tim', '0000', 1024)
+      .catch(function(err) {
+        assert.isNotNull(err, 'No error for short username');
+        assert.equal(err.message, 'USERNAME_LENGTH');
+      });
+  });
+
+  it('should not allow large usernames', function() {
+    return test_registration('alphakevinlevelover9000000000000000', '0000', 1024)
+      .catch(function(err) {
+        assert.isNotNull(err, 'No error for large username');
+        assert.equal(err.message, 'USERNAME_LENGTH');
+      });
+  });
+
+  it('should not allow empty key', function() {
+    return test_registration('timo', '0000', null)
+      .catch(function(err) {
+        assert.isNotNull(err, 'No error for invalid key');
+        assert.equal(err.message, 'KEY_INVALID');
+      });
+  });
+
+  it('should not allow fake key', function() {
+    return test_registration('timo', '0000', '123')
+      .catch(function(err) {
+        assert.isNotNull(err, 'No error for invalid key');
+        assert.equal(err.message, 'KEY_INVALID');
+      });
+  });
+
 });
 
 function test_registration(username, avatar, key_size, emit) {
@@ -87,14 +119,20 @@ function test_registration(username, avatar, key_size, emit) {
     }
   };
 
+
   //use pre-generated keys to speed up tests
-  var key = new NodeRSA(fs.readFileSync('test/key/' + key_size + '.pem'));
+  var key = null;
+  var filename = 'test/key/' + key_size + '.pem';
+  if(key_size != null && fs.existsSync(filename)) key =new NodeRSA(fs.readFileSync(filename));
   
   var data = {
     username: username,
     avatar: avatar,
-    public_key: key.exportKey('pkcs8-public-der')
+    public_key: null
   };
+
+  if(key != null) data.public_key = key.exportKey('pkcs8-public-der');
+  if(key == null && key_size != null) data.public_key = key_size;
 
   return register(nsMock, socketMock, data);
 }

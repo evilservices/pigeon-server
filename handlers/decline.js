@@ -1,7 +1,7 @@
 var Promise = require("bluebird");
 var database = require('../database');
 var utils = require('../utils');
-var debug = require('debug')('accept');
+var debug = require('debug')('decline');
 
 module.exports = function(ns, socket, data) {
   return Promise.resolve().then(function() {
@@ -24,7 +24,7 @@ module.exports = function(ns, socket, data) {
     debug('accept request');
 
     return database.query(
-      'update request set accept = true where user_id = ? and requester_id = ?',
+      'update request set accept = false where user_id = ? and requester_id = ?',
       [socket.user_id, data.user_id]
     )
 
@@ -35,7 +35,7 @@ module.exports = function(ns, socket, data) {
 
     if(row.affectedRows != 1) throw new Error('REQUEST_NOTEXISTS');
 
-    socket.emit('accepted', { 'user_id': data.user_id });
+    socket.emit('declined', { 'user_id': data.user_id });
 
   }).then(function() {
 
@@ -51,7 +51,7 @@ module.exports = function(ns, socket, data) {
     //notify user about new request
     debug('notify user');
 
-    user_socket.emit('accepted', { 'user_id': socket.user_id });
+    user_socket.emit('declined', { 'user_id': socket.user_id });
 
   });
 

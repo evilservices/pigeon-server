@@ -50,7 +50,9 @@ module.exports = function(ns, socket, data) {
     //check if new request exists
     debug('check new request');
 
-    if(row.affectedRows != 1) throw new Error('REQUEST_ERROR');
+    if(row.affectedRows != 1 || row.insertId == null) throw new Error('ERROR_REQUEST');
+
+    socket.emit('requestSuccess', { 'id': row.insertId });
 
   }).then(function() {
 

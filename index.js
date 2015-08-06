@@ -30,7 +30,7 @@ function handler(ns, socket, event, error_event, promise) {
       debug(err.message);
 
       socket.emit(error_event, {
-        'code': err.errno || err.message
+        'code': err.errno || err.message,
         'message': errors[err.message]
       });
     });

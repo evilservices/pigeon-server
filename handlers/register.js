@@ -8,7 +8,11 @@ module.exports = function(ns, socket, data) {
 
   return Promise.resolve().then(function() {
 
-    //check if all parameters exists
+    // check if all parameters exists
+    // - username : string : username of the user (4-20 chars, alphanumeric + _ only)
+    // - avatar : string : avatar of the user (4 chars, 4 hex code digits)
+    // - public_key : binary : public key of the user (DER format)
+
     debug('check parameters');
 
     if(!data.hasOwnProperty('username')) throw new Error('USERNAME_MISSING');
@@ -20,11 +24,20 @@ module.exports = function(ns, socket, data) {
 
   }).then(function () {
 
-    //validate given public key
+    // validate given public key
+    // key must be a valid public key
+    // with a key size between 1024 and 4096 bits
+
     debug('check public key');
 
+    if(data.public_key == null) throw new Error('KEY_INVALID');
+
     var key = new NodeRSA();
-    key.importKey(data.public_key, 'pkcs8-public-der');
+    try {
+      key.importKey(data.public_key, 'pkcs8-public-der');
+    } catch(err) {
+      throw new Error('KEY_INVALID');
+    }
 
     if(key.isEmpty(true)) throw new Error('KEY_INVALID');
     if(!key.isPublic(true)) throw new Error('KEY_NOTPUBLIC')
@@ -34,7 +47,8 @@ module.exports = function(ns, socket, data) {
 
   }).then(function () {
 
-    //count users with give username
+    // count all users with give username
+
     debug('count usernames');
 
     return database.query(
@@ -44,14 +58,15 @@ module.exports = function(ns, socket, data) {
 
   }).then(function (rows) {
 
-    //check if username is already taken
+    // cancel registration if username
+    // already belongs to another user
+
     debug('check username');
 
-    if(rows[0].count == 1) throw new Error('USERNAME_TAKEN');
+    if(rows[0].count > 0) throw new Error('USERNAME_TAKEN');
 
-  }).then(function () {
+    // create new user record
 
-    //create new user
     debug('insert user');
 
     return database.query(
@@ -61,19 +76,19 @@ module.exports = function(ns, socket, data) {
 
   }).then(function (row) {
 
-    //check for sql insert
+    // check if new record
+    // and new user_id exists
+
     debug('check inserted record');
 
     if(row == null || row.affectedRows != 1 || !row.insertId) throw new Error('ERROR_REGISTER')
 
-    return row.insertId;
+    // complete registration
+    // and send new user_id to the client
 
-  }).then(function (id) {
-
-    //return new user id
     debug('respond with user id');
 
-    socket.emit('registerSuccess', { 'id': id });
+    socket.emit('registerSuccess', { 'id': row.insertId });
 
   });
 
