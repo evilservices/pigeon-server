@@ -28,7 +28,7 @@ module.exports = function(ns, socket, data) {
 
     if(key.isEmpty(true)) throw new Error('KEY_INVALID');
     if(!key.isPublic(true)) throw new Error('KEY_NOTPUBLIC')
-
+    
     if(key.getKeySize() < 1024) throw new Error('KEY_TOOSMALL');
     if(key.getKeySize() > 4096) throw new Error('KEY_TOOLARGE');
 
