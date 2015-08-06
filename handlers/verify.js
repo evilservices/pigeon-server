@@ -9,14 +9,14 @@ module.exports = function(ns, socket, data) {
     //check if all parameters exists
     debug('check parameters');
 
-    if(!data.hasOwnProperty('signature')) throw new Error('Missing signature', 1201);
+    if(!data.hasOwnProperty('signature')) throw new Error('SIGNATURE_MISSING');
 
   }).then(function () {
 
     //check if login token exists
     debug('check login token');
 
-    if(!socket.login_token) throw new Error('Never called login', 1202);
+    if(!socket.login_token) throw new Error('LOGINTOKEN_MISSING');
 
   }).then(function () {
 
@@ -33,7 +33,7 @@ module.exports = function(ns, socket, data) {
     //check if username exist
     debug('check username');
 
-    if(rows.length != 1) throw new Error('Username does not exist', 1203)
+    if(rows.length != 1) throw new Error('USERNAME_NOTEXISTS')
 
     return rows[0];
 
@@ -45,7 +45,7 @@ module.exports = function(ns, socket, data) {
     var key = new NodeRSA();
     key.importKey(user.public_key, 'pkcs8-public-der');
 
-    if(!key.verify(socket.login_token, data.signature)) throw new Error('Invalid signature', 1204);
+    if(!key.verify(socket.login_token, data.signature)) throw new Error('SIGNATURE_INVALID');
 
     return user.id;
 

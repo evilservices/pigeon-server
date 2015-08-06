@@ -9,14 +9,14 @@ module.exports = function(ns, socket, data) {
     //check if all parameters exists
     debug('check parameters');
 
-    if(!data.hasOwnProperty('user_id')) throw new Error('Missing user_id', 1401);
+    if(!data.hasOwnProperty('user_id')) throw new Error('USERID_MISSING');
 
   }).then(function() {
 
     //check if user is logged in
     debug('check login state');
 
-    if(!socket.user_id) throw new Error('Not logged in', 1402);
+    if(!socket.user_id) throw new Error('UNAUTHORIZED');
 
   }).then(function() {
 
@@ -33,7 +33,7 @@ module.exports = function(ns, socket, data) {
     //check if user exists
     debug('check user_id');
 
-    if(rows.length != 1) throw new Error('User does not exist', 1403);
+    if(rows.length != 1) throw new Error('USERID_NOTEXISTS');
 
   }).then(function() {
 
@@ -50,7 +50,7 @@ module.exports = function(ns, socket, data) {
     //check if new request exists
     debug('check new request');
 
-    if(row.affectedRows != 1) throw new Error('Could not create request', 1404);
+    if(row.affectedRows != 1) throw new Error('REQUEST_ERROR');
 
   }).then(function() {
 

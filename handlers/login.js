@@ -9,11 +9,10 @@ module.exports = function(ns, socket, data) {
 		//check if all parameters exists
 		debug('check parameters');
 
-		if(!data.hasOwnProperty('username')) throw new Error('Missing username', 1101);
+		if(!data.hasOwnProperty('username')) throw new Error('USERNAME_MISSING');
 
-		if(!validator.isLength(data.username, 4, 20)) throw new Error('Invalid username length', 1110);
-		if(!/^[0-9A-Za-z_]+$/.test(data.username)) throw new Error('Invalid characters in username', 1111);
-
+		if(!validator.isLength(data.username, 4, 20)) throw new Error('USERNAME_LENGTH');
+		if(!/^[0-9A-Za-z_]+$/.test(data.username)) throw new Error('USERNAME_INVALID');
 
 	}).then(function () {
 

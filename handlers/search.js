@@ -8,14 +8,14 @@ module.exports = function(ns, socket, data) {
     //check if all parameters exists
     debug('check parameters');
 
-    if(!data.hasOwnProperty('username')) throw new Error('Missing username', 1301);
+    if(!data.hasOwnProperty('username')) throw new Error('USERNAME_MISSING');
 
   }).then(function() {
 
     //check if user is logged in
     debug('check login state');
 
-    if(!socket.user_id) throw new Error('Not logged in', 1302);
+    if(!socket.user_id) throw new Error('UNAUTHORIZED');
 
   }).then(function() {
 
