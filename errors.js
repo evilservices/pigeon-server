@@ -14,6 +14,7 @@ var errors = {
   'KEY_TOOSMALL': 'Public key must be at least 1024 bits',
   'SIGNATURE_MISSING': 'Signature is required',
   'SIGNATURE_INVALID': 'Signature is invalid',
+  'REQUEST_NOTEXISTS': 'Request does not exists',
   'LOGINTOKEN_MISSING': 'Logintoken is required',
   'UNAUTHORIZED': 'Login is required for this action',
   'ERROR_REGISTER': 'Registration failed, please try it later',

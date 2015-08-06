@@ -30,8 +30,25 @@ module.exports = function(ns, socket, data) {
 
   }).then(function(row) {
 
+    //check if request exists
+    debug('check request');
+
     if(row.affectedRows != 1) throw new Error('REQUEST_NOTEXISTS');
 
-  })
+  }).then(function() {
+
+    //check if accepted user is online
+    debug('check online status');
+
+    return utils.getSocket(ns, data.user_id);
+
+  }).then(function() {
+
+    //notify user about new request
+    debug('notify user');
+
+    user_socket.emit('accepted', { 'username': socket.username });
+
+  });
 
 };
